@@ -1,0 +1,921 @@
+{
+ "cells": [
+  {
+   "cell_type": "markdown",
+   "id": "0790a131",
+   "metadata": {},
+   "source": [
+    "# Assignment-Data-Visualization\n",
+    "# Tugas Pembelajaran Secara Statistik dan Optimisasi\n",
+    "\n",
+    "Nama : Muh. Adrian Hidayat\n",
+    "NIM  : 1102200515"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 18,
+   "id": "bfc2806d",
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "import pandas as pd\n",
+    "import numpy as np\n",
+    "file = \"epl-goalScorer(20-21).csv\"\n",
+    "dataset = pd.read_csv(file)\n",
+    "df_noid=dataset.iloc[:,2:]"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 15,
+   "id": "783438e5",
+   "metadata": {
+    "scrolled": true
+   },
+   "outputs": [
+    {
+     "data": {
+      "text/plain": [
+       "<bound method NDFrame.head of      Unnamed: 0    id             player_name  games  time  goals         xG  \\\n",
+       "0             0   647              Harry Kane     35  3097     23  22.174859   \n",
+       "1             1  1250           Mohamed Salah     37  3085     22  20.250847   \n",
+       "2             2  1228         Bruno Fernandes     37  3117     18  16.019454   \n",
+       "3             3   453           Son Heung-Min     37  3139     17  11.023287   \n",
+       "4             4   822         Patrick Bamford     38  3085     17  18.401863   \n",
+       "..          ...   ...                     ...    ...   ...    ...        ...   \n",
+       "517         517  9415  Jaden Philogene-Bidace      1     1      0   0.000000   \n",
+       "518         518  9423         Gaetano Berardi      2   113      0   0.074761   \n",
+       "519         519  9524          Anthony Elanga      1    67      0   0.000000   \n",
+       "520         520  9540             Femi Seriki      1     1      0   0.000000   \n",
+       "521         521  9552         Tyrese Francois      1    13      0   0.000000   \n",
+       "\n",
+       "     assists         xA  shots  key_passes  yellow_cards  red_cards position  \\\n",
+       "0         14   7.577094    138          49             1          0        F   \n",
+       "1          5   6.528526    126          55             0          0    F M S   \n",
+       "2         12  11.474996    121          95             6          0      M S   \n",
+       "3         10   9.512992     68          75             0          0    F M S   \n",
+       "4          7   3.782247    107          30             3          0      F S   \n",
+       "..       ...        ...    ...         ...           ...        ...      ...   \n",
+       "517        0   0.000000      0           0             0          0        S   \n",
+       "518        0   0.000000      1           0             0          0      D S   \n",
+       "519        0   0.000000      0           0             0          0        M   \n",
+       "520        0   0.000000      0           0             0          0        S   \n",
+       "521        0   0.000000      0           0             0          0        S   \n",
+       "\n",
+       "            team_title  npg       npxG    xGChain  xGBuildup  \n",
+       "0            Tottenham   19  19.130183  24.995648   4.451257  \n",
+       "1            Liverpool   16  15.683834  28.968234   9.800236  \n",
+       "2    Manchester United    9   8.407840  26.911412  11.932285  \n",
+       "3            Tottenham   16  10.262118  20.671916   6.608751  \n",
+       "4                Leeds   15  16.879525  23.394953   4.131796  \n",
+       "..                 ...  ...        ...        ...        ...  \n",
+       "517        Aston Villa    0   0.000000   0.056044   0.056044  \n",
+       "518              Leeds    0   0.074761   0.231278   0.231278  \n",
+       "519  Manchester United    0   0.000000   0.000000   0.000000  \n",
+       "520   Sheffield United    0   0.000000   0.000000   0.000000  \n",
+       "521             Fulham    0   0.000000   0.000000   0.000000  \n",
+       "\n",
+       "[522 rows x 19 columns]>"
+      ]
+     },
+     "execution_count": 15,
+     "metadata": {},
+     "output_type": "execute_result"
+    }
+   ],
+   "source": [
+    "dataset.head"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 19,
+   "id": "2abd0cf3",
+   "metadata": {},
+   "outputs": [
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "Unnamed: 0        int64\n",
+      "id                int64\n",
+      "player_name      object\n",
+      "games             int64\n",
+      "time              int64\n",
+      "goals             int64\n",
+      "xG              float64\n",
+      "assists           int64\n",
+      "xA              float64\n",
+      "shots             int64\n",
+      "key_passes        int64\n",
+      "yellow_cards      int64\n",
+      "red_cards         int64\n",
+      "position         object\n",
+      "team_title       object\n",
+      "npg               int64\n",
+      "npxG            float64\n",
+      "xGChain         float64\n",
+      "xGBuildup       float64\n",
+      "dtype: object\n"
+     ]
+    }
+   ],
+   "source": [
+    "print(dataset.dtypes)"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "21b12506",
+   "metadata": {},
+   "source": [
+    "1. 10 player terbanyak mencetak gol"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 26,
+   "id": "86020bf7",
+   "metadata": {},
+   "outputs": [
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "10 Player terbanyak mencetak gol:\n"
+     ]
+    },
+    {
+     "data": {
+      "text/html": [
+       "<div>\n",
+       "<style scoped>\n",
+       "    .dataframe tbody tr th:only-of-type {\n",
+       "        vertical-align: middle;\n",
+       "    }\n",
+       "\n",
+       "    .dataframe tbody tr th {\n",
+       "        vertical-align: top;\n",
+       "    }\n",
+       "\n",
+       "    .dataframe thead th {\n",
+       "        text-align: right;\n",
+       "    }\n",
+       "</style>\n",
+       "<table border=\"1\" class=\"dataframe\">\n",
+       "  <thead>\n",
+       "    <tr style=\"text-align: right;\">\n",
+       "      <th></th>\n",
+       "      <th>player_name</th>\n",
+       "      <th>goals</th>\n",
+       "    </tr>\n",
+       "  </thead>\n",
+       "  <tbody>\n",
+       "    <tr>\n",
+       "      <th>0</th>\n",
+       "      <td>Harry Kane</td>\n",
+       "      <td>23</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>1</th>\n",
+       "      <td>Mohamed Salah</td>\n",
+       "      <td>22</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>2</th>\n",
+       "      <td>Bruno Fernandes</td>\n",
+       "      <td>18</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>3</th>\n",
+       "      <td>Son Heung-Min</td>\n",
+       "      <td>17</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>4</th>\n",
+       "      <td>Patrick Bamford</td>\n",
+       "      <td>17</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>5</th>\n",
+       "      <td>Dominic Calvert-Lewin</td>\n",
+       "      <td>16</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>6</th>\n",
+       "      <td>Jamie Vardy</td>\n",
+       "      <td>15</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>7</th>\n",
+       "      <td>Ollie Watkins</td>\n",
+       "      <td>14</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>8</th>\n",
+       "      <td>Ilkay Gündogan</td>\n",
+       "      <td>13</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>9</th>\n",
+       "      <td>Alexandre Lacazette</td>\n",
+       "      <td>13</td>\n",
+       "    </tr>\n",
+       "  </tbody>\n",
+       "</table>\n",
+       "</div>"
+      ],
+      "text/plain": [
+       "             player_name  goals\n",
+       "0             Harry Kane     23\n",
+       "1          Mohamed Salah     22\n",
+       "2        Bruno Fernandes     18\n",
+       "3          Son Heung-Min     17\n",
+       "4        Patrick Bamford     17\n",
+       "5  Dominic Calvert-Lewin     16\n",
+       "6            Jamie Vardy     15\n",
+       "7          Ollie Watkins     14\n",
+       "8         Ilkay Gündogan     13\n",
+       "9    Alexandre Lacazette     13"
+      ]
+     },
+     "execution_count": 26,
+     "metadata": {},
+     "output_type": "execute_result"
+    }
+   ],
+   "source": [
+    "top_pencetak_gol = dataset.sort_values(by='goals', ascending=False).head(10)\n",
+    "print(\"10 Player terbanyak mencetak gol:\")\n",
+    "top_pencetak_gol[['player_name', 'goals']]"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "32f6b87e",
+   "metadata": {},
+   "source": [
+    "2. 10 Player terlama durasi bermain"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 28,
+   "id": "de15a49b",
+   "metadata": {},
+   "outputs": [
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "10 Player dengan durasi bermain terlama:\n"
+     ]
+    },
+    {
+     "data": {
+      "text/html": [
+       "<div>\n",
+       "<style scoped>\n",
+       "    .dataframe tbody tr th:only-of-type {\n",
+       "        vertical-align: middle;\n",
+       "    }\n",
+       "\n",
+       "    .dataframe tbody tr th {\n",
+       "        vertical-align: top;\n",
+       "    }\n",
+       "\n",
+       "    .dataframe thead th {\n",
+       "        text-align: right;\n",
+       "    }\n",
+       "</style>\n",
+       "<table border=\"1\" class=\"dataframe\">\n",
+       "  <thead>\n",
+       "    <tr style=\"text-align: right;\">\n",
+       "      <th></th>\n",
+       "      <th>player_name</th>\n",
+       "      <th>time</th>\n",
+       "    </tr>\n",
+       "  </thead>\n",
+       "  <tbody>\n",
+       "    <tr>\n",
+       "      <th>296</th>\n",
+       "      <td>Hugo Lloris</td>\n",
+       "      <td>3420</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>378</th>\n",
+       "      <td>Emiliano Martinez</td>\n",
+       "      <td>3420</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>311</th>\n",
+       "      <td>Kasper Schmeichel</td>\n",
+       "      <td>3420</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>110</th>\n",
+       "      <td>Pierre-Emile Højbjerg</td>\n",
+       "      <td>3420</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>40</th>\n",
+       "      <td>Stuart Dallas</td>\n",
+       "      <td>3412</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>327</th>\n",
+       "      <td>Matt Targett</td>\n",
+       "      <td>3407</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>480</th>\n",
+       "      <td>Luke Ayling</td>\n",
+       "      <td>3400</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>204</th>\n",
+       "      <td>Andrew Robertson</td>\n",
+       "      <td>3391</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>55</th>\n",
+       "      <td>Youri Tielemans</td>\n",
+       "      <td>3359</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>7</th>\n",
+       "      <td>Ollie Watkins</td>\n",
+       "      <td>3330</td>\n",
+       "    </tr>\n",
+       "  </tbody>\n",
+       "</table>\n",
+       "</div>"
+      ],
+      "text/plain": [
+       "               player_name  time\n",
+       "296            Hugo Lloris  3420\n",
+       "378      Emiliano Martinez  3420\n",
+       "311      Kasper Schmeichel  3420\n",
+       "110  Pierre-Emile Højbjerg  3420\n",
+       "40           Stuart Dallas  3412\n",
+       "327           Matt Targett  3407\n",
+       "480            Luke Ayling  3400\n",
+       "204       Andrew Robertson  3391\n",
+       "55         Youri Tielemans  3359\n",
+       "7            Ollie Watkins  3330"
+      ]
+     },
+     "execution_count": 28,
+     "metadata": {},
+     "output_type": "execute_result"
+    }
+   ],
+   "source": [
+    "top_durasi_bermain = dataset.sort_values(by='time', ascending=False).head(10)\n",
+    "print(\"10 Player dengan durasi bermain terlama:\")\n",
+    "top_durasi_bermain[['player_name', 'time']]"
+   ]
+  },
+  {
+   "attachments": {},
+   "cell_type": "markdown",
+   "id": "9b892d0e",
+   "metadata": {},
+   "source": [
+    "3. 10 player terbanyak assist"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 29,
+   "id": "c2ecf1cf",
+   "metadata": {},
+   "outputs": [
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "10 Player dengan assist terbanyak:\n"
+     ]
+    },
+    {
+     "data": {
+      "text/html": [
+       "<div>\n",
+       "<style scoped>\n",
+       "    .dataframe tbody tr th:only-of-type {\n",
+       "        vertical-align: middle;\n",
+       "    }\n",
+       "\n",
+       "    .dataframe tbody tr th {\n",
+       "        vertical-align: top;\n",
+       "    }\n",
+       "\n",
+       "    .dataframe thead th {\n",
+       "        text-align: right;\n",
+       "    }\n",
+       "</style>\n",
+       "<table border=\"1\" class=\"dataframe\">\n",
+       "  <thead>\n",
+       "    <tr style=\"text-align: right;\">\n",
+       "      <th></th>\n",
+       "      <th>player_name</th>\n",
+       "      <th>assists</th>\n",
+       "    </tr>\n",
+       "  </thead>\n",
+       "  <tbody>\n",
+       "    <tr>\n",
+       "      <th>0</th>\n",
+       "      <td>Harry Kane</td>\n",
+       "      <td>14</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>2</th>\n",
+       "      <td>Bruno Fernandes</td>\n",
+       "      <td>12</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>58</th>\n",
+       "      <td>Kevin De Bruyne</td>\n",
+       "      <td>11</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>3</th>\n",
+       "      <td>Son Heung-Min</td>\n",
+       "      <td>10</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>51</th>\n",
+       "      <td>Jack Grealish</td>\n",
+       "      <td>10</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>15</th>\n",
+       "      <td>Marcus Rashford</td>\n",
+       "      <td>9</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>6</th>\n",
+       "      <td>Jamie Vardy</td>\n",
+       "      <td>9</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>57</th>\n",
+       "      <td>Raphinha</td>\n",
+       "      <td>9</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>49</th>\n",
+       "      <td>Timo Werner</td>\n",
+       "      <td>8</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>281</th>\n",
+       "      <td>Aaron Cresswell</td>\n",
+       "      <td>8</td>\n",
+       "    </tr>\n",
+       "  </tbody>\n",
+       "</table>\n",
+       "</div>"
+      ],
+      "text/plain": [
+       "         player_name  assists\n",
+       "0         Harry Kane       14\n",
+       "2    Bruno Fernandes       12\n",
+       "58   Kevin De Bruyne       11\n",
+       "3      Son Heung-Min       10\n",
+       "51     Jack Grealish       10\n",
+       "15   Marcus Rashford        9\n",
+       "6        Jamie Vardy        9\n",
+       "57          Raphinha        9\n",
+       "49       Timo Werner        8\n",
+       "281  Aaron Cresswell        8"
+      ]
+     },
+     "execution_count": 29,
+     "metadata": {},
+     "output_type": "execute_result"
+    }
+   ],
+   "source": [
+    "top_assists = dataset.sort_values(by='assists', ascending=False).head(10)\n",
+    "print(\"10 Player dengan assist terbanyak:\")\n",
+    "top_assists[['player_name', 'assists']]"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "4dcddc2d",
+   "metadata": {},
+   "source": [
+    "4. 4 player pencetak gol terbanyak dari kesebelasan manchester city"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 30,
+   "id": "92cc12b6",
+   "metadata": {},
+   "outputs": [
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "4 Player pencetak gol terbanyak dari kesebelasan Manchester City:\n"
+     ]
+    },
+    {
+     "data": {
+      "text/html": [
+       "<div>\n",
+       "<style scoped>\n",
+       "    .dataframe tbody tr th:only-of-type {\n",
+       "        vertical-align: middle;\n",
+       "    }\n",
+       "\n",
+       "    .dataframe tbody tr th {\n",
+       "        vertical-align: top;\n",
+       "    }\n",
+       "\n",
+       "    .dataframe thead th {\n",
+       "        text-align: right;\n",
+       "    }\n",
+       "</style>\n",
+       "<table border=\"1\" class=\"dataframe\">\n",
+       "  <thead>\n",
+       "    <tr style=\"text-align: right;\">\n",
+       "      <th></th>\n",
+       "      <th>player_name</th>\n",
+       "      <th>goals</th>\n",
+       "    </tr>\n",
+       "  </thead>\n",
+       "  <tbody>\n",
+       "    <tr>\n",
+       "      <th>8</th>\n",
+       "      <td>Ilkay Gündogan</td>\n",
+       "      <td>13</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>22</th>\n",
+       "      <td>Raheem Sterling</td>\n",
+       "      <td>10</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>28</th>\n",
+       "      <td>Riyad Mahrez</td>\n",
+       "      <td>9</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>35</th>\n",
+       "      <td>Gabriel Jesus</td>\n",
+       "      <td>8</td>\n",
+       "    </tr>\n",
+       "  </tbody>\n",
+       "</table>\n",
+       "</div>"
+      ],
+      "text/plain": [
+       "        player_name  goals\n",
+       "8    Ilkay Gündogan     13\n",
+       "22  Raheem Sterling     10\n",
+       "28     Riyad Mahrez      9\n",
+       "35    Gabriel Jesus      8"
+      ]
+     },
+     "execution_count": 30,
+     "metadata": {},
+     "output_type": "execute_result"
+    }
+   ],
+   "source": [
+    "mc_top_pencetak_gol =dataset[dataset['team_title'] == 'Manchester City'].sort_values(by='goals', ascending=False).head(4)\n",
+    "print(\"4 Player pencetak gol terbanyak dari kesebelasan Manchester City:\")\n",
+    "mc_top_pencetak_gol[['player_name', 'goals']]"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "fe54f321",
+   "metadata": {},
+   "source": [
+    "5. Dari kesebelasan mana pencetak gol terbanyak"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 37,
+   "id": "818c5bcb",
+   "metadata": {},
+   "outputs": [
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "Dari kesebelasan mana pencetak gol terbanyak:\n"
+     ]
+    },
+    {
+     "data": {
+      "text/plain": [
+       "team_title    Tottenham\n",
+       "Name: 0, dtype: object"
+      ]
+     },
+     "execution_count": 37,
+     "metadata": {},
+     "output_type": "execute_result"
+    }
+   ],
+   "source": [
+    "tim_top_pencetak_gol= dataset.sort_values(by='goals', ascending=False).iloc[0]\n",
+    "print(\"Dari kesebelasan mana pencetak gol terbanyak:\")\n",
+    "tim_top_pencetak_gol[['team_title']]"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "1930b351",
+   "metadata": {},
+   "source": [
+    "6. Berapa jumlah kartu kuning dan merah yang diterima pembuat assist  terbanyak ?"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 38,
+   "id": "af68f33d",
+   "metadata": {},
+   "outputs": [
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "Jumlah kartu kuning dan merah yang diterima pembuat assist terbanyak:\n"
+     ]
+    },
+    {
+     "data": {
+      "text/plain": [
+       "player_name     Harry Kane\n",
+       "yellow_cards             1\n",
+       "red_cards                0\n",
+       "Name: 0, dtype: object"
+      ]
+     },
+     "execution_count": 38,
+     "metadata": {},
+     "output_type": "execute_result"
+    }
+   ],
+   "source": [
+    "top_assists = dataset.sort_values(by='assists', ascending=False).iloc[0]\n",
+    "print(\"Jumlah kartu kuning dan merah yang diterima pembuat assist terbanyak:\")\n",
+    "top_assists[['player_name', 'yellow_cards','red_cards']]"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "cde6d06c",
+   "metadata": {},
+   "source": [
+    "7. Siapa yang jumlah assist dan golnya paling banyak dan dari kesebelasan mana ?"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 42,
+   "id": "5f764c10",
+   "metadata": {},
+   "outputs": [
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "Pemain dengan jumlah assist dan gol terbanyak dan dari kesebelasan mana:\n"
+     ]
+    },
+    {
+     "data": {
+      "text/plain": [
+       "player_name    Harry Kane\n",
+       "goals                  23\n",
+       "assists                14\n",
+       "team_title      Tottenham\n",
+       "Name: 0, dtype: object"
+      ]
+     },
+     "execution_count": 42,
+     "metadata": {},
+     "output_type": "execute_result"
+    }
+   ],
+   "source": [
+    "top_goals_assists_player = dataset.loc[(dataset['goals'] + dataset['assists']).idxmax()]\n",
+    "team_most_goals_assists_player = top_goals_assists_player['team_title']\n",
+    "print(\"Pemain dengan jumlah assist dan gol terbanyak dan dari kesebelasan mana:\")\n",
+    "top_goals_assists_player[['player_name', 'goals','assists','team_title']]"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "79360207",
+   "metadata": {},
+   "source": [
+    "8. 5 kesebelasan yang menyumbangkan gol terbanyak"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 51,
+   "id": "4dae2f52",
+   "metadata": {},
+   "outputs": [
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "5 Kesebelasan yang menyumbangkan gol terbanyak:\n"
+     ]
+    },
+    {
+     "data": {
+      "text/plain": [
+       "team_title\n",
+       "Manchester City      77\n",
+       "Manchester United    68\n",
+       "Tottenham            66\n",
+       "Leicester            64\n",
+       "Liverpool            64\n",
+       "Name: goals, dtype: int64"
+      ]
+     },
+     "execution_count": 51,
+     "metadata": {},
+     "output_type": "execute_result"
+    }
+   ],
+   "source": [
+    "top_5_goal_contributors_team = dataset.groupby('team_title')['goals'].sum().nlargest(5)\n",
+    "print(\"5 Kesebelasan yang menyumbangkan gol terbanyak:\")\n",
+    "top_5_goal_contributors_team"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "68d3c8d3",
+   "metadata": {},
+   "source": [
+    "9. Urutkan pemain berdasarkan jumlah gol terbanyak tanpa mendapatkan kartu sama sekali !"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 55,
+   "id": "c44413ac",
+   "metadata": {},
+   "outputs": [
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "Pemain yang memiliki jumlah gol terbanyak tanpa mendapatkan kartu sama sekali:\n"
+     ]
+    },
+    {
+     "data": {
+      "text/html": [
+       "<div>\n",
+       "<style scoped>\n",
+       "    .dataframe tbody tr th:only-of-type {\n",
+       "        vertical-align: middle;\n",
+       "    }\n",
+       "\n",
+       "    .dataframe tbody tr th {\n",
+       "        vertical-align: top;\n",
+       "    }\n",
+       "\n",
+       "    .dataframe thead th {\n",
+       "        text-align: right;\n",
+       "    }\n",
+       "</style>\n",
+       "<table border=\"1\" class=\"dataframe\">\n",
+       "  <thead>\n",
+       "    <tr style=\"text-align: right;\">\n",
+       "      <th></th>\n",
+       "      <th>player_name</th>\n",
+       "      <th>goals</th>\n",
+       "    </tr>\n",
+       "  </thead>\n",
+       "  <tbody>\n",
+       "    <tr>\n",
+       "      <th>1</th>\n",
+       "      <td>Mohamed Salah</td>\n",
+       "      <td>22</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>3</th>\n",
+       "      <td>Son Heung-Min</td>\n",
+       "      <td>17</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>13</th>\n",
+       "      <td>Chris Wood</td>\n",
+       "      <td>12</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>28</th>\n",
+       "      <td>Riyad Mahrez</td>\n",
+       "      <td>9</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>29</th>\n",
+       "      <td>Harvey Barnes</td>\n",
+       "      <td>9</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>...</th>\n",
+       "      <td>...</td>\n",
+       "      <td>...</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>353</th>\n",
+       "      <td>Lys Mousset</td>\n",
+       "      <td>0</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>343</th>\n",
+       "      <td>Islam Slimani</td>\n",
+       "      <td>0</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>341</th>\n",
+       "      <td>Moise Kean</td>\n",
+       "      <td>0</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>340</th>\n",
+       "      <td>Emerson</td>\n",
+       "      <td>0</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>521</th>\n",
+       "      <td>Tyrese Francois</td>\n",
+       "      <td>0</td>\n",
+       "    </tr>\n",
+       "  </tbody>\n",
+       "</table>\n",
+       "<p>164 rows × 2 columns</p>\n",
+       "</div>"
+      ],
+      "text/plain": [
+       "         player_name  goals\n",
+       "1      Mohamed Salah     22\n",
+       "3      Son Heung-Min     17\n",
+       "13        Chris Wood     12\n",
+       "28      Riyad Mahrez      9\n",
+       "29     Harvey Barnes      9\n",
+       "..               ...    ...\n",
+       "353      Lys Mousset      0\n",
+       "343    Islam Slimani      0\n",
+       "341       Moise Kean      0\n",
+       "340          Emerson      0\n",
+       "521  Tyrese Francois      0\n",
+       "\n",
+       "[164 rows x 2 columns]"
+      ]
+     },
+     "execution_count": 55,
+     "metadata": {},
+     "output_type": "execute_result"
+    }
+   ],
+   "source": [
+    "players_tanpa_kartu = dataset[(dataset['yellow_cards'] == 0) & (dataset['red_cards'] == 0)].sort_values(by='goals', ascending=False)\n",
+    "print(\"Pemain yang memiliki jumlah gol terbanyak tanpa mendapatkan kartu sama sekali:\")\n",
+    "players_tanpa_kartu[['player_name', 'goals']]"
+   ]
+  }
+ ],
+ "metadata": {
+  "kernelspec": {
+   "display_name": "Python 3 (ipykernel)",
+   "language": "python",
+   "name": "python3"
+  },
+  "language_info": {
+   "codemirror_mode": {
+    "name": "ipython",
+    "version": 3
+   },
+   "file_extension": ".py",
+   "mimetype": "text/x-python",
+   "name": "python",
+   "nbconvert_exporter": "python",
+   "pygments_lexer": "ipython3",
+   "version": "3.9.13"
+  }
+ },
+ "nbformat": 4,
+ "nbformat_minor": 5
+}
